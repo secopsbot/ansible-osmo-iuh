@@ -1,0 +1,39 @@
+---
+# osmo iuh config role
+
+- name: "create config folder for openbsc"
+  file: path={{omso_config_base}} state=directory
+  tags: osmoconfig
+
+- name:     "iuh config: readme"
+  template: src=README.txt.j2 dest="{{omso_config_base}}/README.txt"
+  tags: osmoconfig
+
+- name:     "iuh config: ggsn"
+  template: src=ggsn.conf.j2 dest="{{omso_config_base}}/ggsn.conf"
+  tags: osmoconfig
+
+- name: "iuh config: ggsn: state folder"
+  file: path=/var/lib/ggsn state=directory mode=0777
+  become: true
+  tags: osmoconfig
+
+- name:     "iuh config: mgcp"
+  template: src=mgcp.cfg.j2 dest="{{omso_config_base}}/mgcp.cfg"
+  tags: osmoconfig
+
+- name:     "iuh config: cscn"
+  template: src=osmo-cscn.cfg.j2 dest="{{omso_config_base}}/osmo-cscn.cfg"
+  tags: osmoconfig
+
+- name:     "iuh config: hnbgw"
+  template: src=osmo-hnbgw.cfg.j2 dest="{{omso_config_base}}/osmo-hnbgw.cfg"
+  tags: osmoconfig
+
+- name:     "iuh config: sgsn"
+  template: src=osmo-sgsn.cfg.j2 dest="{{omso_config_base}}/osmo-sgsn.cfg"
+  tags: osmoconfig
+
+- name:     "screenrc config for osmo"
+  template: src=screenrc.j2 dest="{{omso_config_base}}/screenrc"
+  tags: osmoconfig

@@ -1,0 +1,14 @@
+log stderr
+ logging print extended-timestamp 1
+ logging level all debug
+ logging filter all 1
+mgcp
+  local ip 10.9.1.120
+  bts ip 10.9.1.11
+  bind ip 10.9.1.120
+  bind port 2427
+  rtp base 4000
+  rtp force-ptime 20
+  sdp audio payload number 98
+  sdp audio payload name AMR/8000
+  number endpoints 31

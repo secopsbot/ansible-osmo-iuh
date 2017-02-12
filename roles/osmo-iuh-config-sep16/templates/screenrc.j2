@@ -1,0 +1,44 @@
+# don't display the copyright page
+startup_message off
+
+# increase scrollback buffer size
+defscrollback 10000
+
+# create windows
+chdir
+chdir 3G-config/
+#
+screen -t bash
+select 0
+stuff "echo 'random bash, nothing happens here'^M"
+#
+screen -t osmo-CSCN 
+select 1
+stuff "osmo-cscn -c ./osmo-cscn.cfg^M"
+#
+screen -t osmo-SGSN
+select 2
+stuff "osmo-sgsn -c ./osmo-sgsn.cfg^M"
+#
+screen -t osmo-bsc_mgcp
+select 3
+stuff "osmo-bsc_mgcp -c ./mgcp.cfg^M"
+#
+screen -t osmo-hnbgw
+select 4
+stuff "osmo-hnbgw -c ./osmo-hnbgw.cfg^M"
+#
+screen -t openggsn
+select 5
+stuff "sudo ggsn --gtp-linux --fg -c ggsn.conf^M"
+#
+altscreen on
+term screen-256color
+bind ',' prev
+bind '.' next
+#
+#change the hardstatus settings to give an window list at the bottom of the
+##screen, with the time and date and with the current window highlighted
+hardstatus alwayslastline
+##hardstatus string '%{= kG}%-Lw%{= kW}%50> %n%f* %t%{= kG}%+Lw%< %{= kG}%-=%c:%s%{-}'
+hardstatus string '%{= kG}[ %{G}%H %{g}][%= %{= kw}%?%-Lw%?%{r}(%{W}%n*%f%t%?(%u)%?%{r})%{w}%?%+Lw%?%?%= %{g}][%{B} %m-%d %{W}%c %{g}]'

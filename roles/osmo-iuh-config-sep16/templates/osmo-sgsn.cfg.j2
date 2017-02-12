@@ -1,0 +1,29 @@
+!
+! Osmocom SGSN configuration
+!
+line vty
+ no login
+!
+sgsn
+ gtp local-ip 10.9.1.120
+ ggsn 0 remote-ip 10.9.1.13
+ auth-policy accept-all
+!
+ns
+ timer tns-block 3
+ timer tns-block-retries 3
+ timer tns-reset 3
+ timer tns-reset-retries 3
+ timer tns-test 30
+ timer tns-alive 3
+ timer tns-alive-retries 10
+ encapsulation udp local-ip 127.0.0.1
+ encapsulation udp local-port 23000
+ encapsulation framerelay-gre enabled 0
+!
+bssgp
+!
+log stderr
+ logging print extended-timestamp 1
+ logging level all debug
+ logging filter all 1

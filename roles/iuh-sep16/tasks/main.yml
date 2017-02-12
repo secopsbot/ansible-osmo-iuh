@@ -1,0 +1,607 @@
+---
+# ok, lets install some deb stuffs
+
+- name: "optional deb stuffs"
+  become: true
+  apt: name={{item}} state=installed
+  with_items:
+       - aptitude 
+       - debtags
+       - libxml-simple-perl
+       - libwww-perl
+  tags: debOptional
+
+- name: "Default Deb packages"
+  become: true
+  apt: name={{item}} state=installed
+  with_items:
+       - vim
+       - atop
+       - htop
+       - sudo
+       - screen
+  tags: debDefault
+
+- modprobe:
+    name: gtp
+    state: present
+  become: true
+  tags:   gtp
+
+- lineinfile:
+    dest: /etc/modules
+    line: 'gtp'
+  become: true
+  tags:   gtp
+
+
+- name: "osmo deps"
+  become: true
+  apt: name={{item}} state=installed
+  with_items:
+    - build-essential
+    - libtool
+    - libtalloc-dev
+    - shtool
+    - autoconf
+    - automake
+    - git-core
+    - pkg-config
+    - make 
+    - gcc
+    - libpcsclite-dev
+
+- name: "create _code folder for osmo projects"
+  file: path={{osmo_checkout_base}} state=directory
+
+# libOsmoCore
+
+- name: "libosmocore: clone"
+  git:
+    repo: git://git.osmocom.org/libosmocore.git
+    dest: "{{osmo_checkout_base}}/libosmocore"
+    version: 9c0751fc60e6282b5f5ff791d53f6f862f1c9c79
+  tags: libosmocore
+
+- name: "libosmocore: autoreconf"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libosmocore'
+  with_items:
+    - autoreconf -i
+  tags: libosmocore
+
+- name: "libosmocore: configure"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libosmocore'
+  with_items:
+    - ./configure
+  tags: libosmocore
+
+- name: "libosmocore: make"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libosmocore'
+  with_items:
+    - make -j2
+  tags: libosmocore
+
+# - name: "libosmocore: make check"
+#   command: '{{item}} chdir={{osmo_checkout_base}}/libosmocore'
+#   with_items:
+#     - make check
+#   tags: libosmocore
+
+- name: "libosmocore: make install"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libosmocore'
+  with_items:
+    - make install
+  become: true
+  tags: libosmocore
+
+- name: "libosmocore: ldconfig"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libosmocore'
+  with_items:
+    - ldconfig -i
+  become: true
+  tags: libosmocore
+
+# libOsmo-ABIS
+
+- name: "libosmo-abis deps"
+  become: true
+  apt: name={{item}} state=installed
+  with_items:
+    - libortp-dev
+  tags: libosmo-abis
+
+- name: "libosmo-abis: clone"
+  git:
+    repo: git://git.osmocom.org/libosmo-abis
+    dest: "{{osmo_checkout_base}}/libosmo-abis"
+    version: 15d9b7929d449e4138bcb003c614035bceadc3d1
+  tags: libosmo-abis
+
+- name: "libosmo-abis: autoreconf"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libosmo-abis'
+  with_items:
+    - autoreconf -i
+  tags: libosmo-abis
+
+- name: "libosmo-abis: configure"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libosmo-abis'
+  with_items:
+    - ./configure
+  tags: libosmo-abis
+
+- name: "libosmo-abis: make"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libosmo-abis'
+  with_items:
+    - make -j2
+  tags: libosmo-abis
+
+- name: "libosmo-abis: make install"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libosmo-abis'
+  with_items:
+    - make install
+  become: true
+  tags: libosmo-abis
+
+- name: "libosmo-abis: ldconfig"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libosmo-abis'
+  with_items:
+    - ldconfig -i
+  become: true
+  tags: libosmo-abis
+
+
+# libosmo-netif
+
+- name: "libosmo-netif deps"
+  become: true
+  apt: name={{item}} state=installed
+  with_items:
+    - libsctp-dev
+  tags: libosmo-netif
+
+- name: "libosmo-netif: clone"
+  git:
+    repo: git://git.osmocom.org/libosmo-netif
+    dest: "{{osmo_checkout_base}}/libosmo-netif"
+    version:  b830719b392dc96fd7987fb3dfba31a92a6fa38b
+  tags: libosmo-netif
+
+- name: "libosmo-netif: autoreconf"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libosmo-netif'
+  with_items:
+    - autoreconf -i
+  tags: libosmo-netif
+
+- name: "libosmo-netif: configure"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libosmo-netif'
+  with_items:
+    - ./configure
+  tags: libosmo-netif
+
+- name: "libosmo-netif: make"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libosmo-netif'
+  with_items:
+    - make -j2
+  tags: libosmo-netif
+
+- name: "libosmo-netif: make install"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libosmo-netif'
+  with_items:
+    - make install
+  become: true
+  tags: libosmo-netif
+
+- name: "libosmo-netif: ldconfig"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libosmo-netif'
+  with_items:
+    - ldconfig -i
+  become: true
+  tags: libosmo-netif
+
+
+  # libosmo-sccp
+
+# - name: "libosmo-sccp deps"
+#   become: true
+#   apt: name={{item}} state=installed
+#   with_items:
+#     - libsctp-dev
+#  tags: libosmo-sccp
+
+- name: "libosmo-sccp: clone"
+  git:
+    repo: git://git.osmocom.org/libosmo-sccp
+    dest: "{{osmo_checkout_base}}/libosmo-sccp"
+    version:  c1307ee64d25f4b19397bcf4791ba4c85d1dbe79
+  tags: libosmo-sccp
+
+- name: "libosmo-sccp: autoreconf"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libosmo-sccp'
+  with_items:
+    - autoreconf -i
+  tags: libosmo-sccp
+
+- name: "libosmo-sccp: configure"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libosmo-sccp'
+  with_items:
+    - ./configure
+  tags: libosmo-sccp
+
+- name: "libosmo-sccp: make"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libosmo-sccp'
+  with_items:
+    - make -j2
+  tags: libosmo-sccp
+
+- name: "libosmo-sccp: make install"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libosmo-sccp'
+  with_items:
+    - make install
+  become: true
+  tags: libosmo-sccp
+
+- name: "libosmo-sccp: ldconfig"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libosmo-sccp'
+  with_items:
+    - ldconfig -i
+  become: true
+  tags: libosmo-sccp
+
+
+
+# libsmpp34
+
+# - name: "libsmpp34 deps"
+#   become: true
+#   apt: name={{item}} state=installed
+#   with_items:
+#     - libsctp-dev
+# tags: libsmpp34
+
+- name: "libsmpp34: clone"
+  git:
+    repo: git://git.osmocom.org/libsmpp34
+    dest: "{{osmo_checkout_base}}/libsmpp34"
+    version:  2ccf5304ca465fbc70f6ae3283b4f49aaa9b650f
+  tags: libsmpp34
+
+- name: "libsmpp34: autoreconf"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libsmpp34'
+  with_items:
+    - autoreconf -i
+  tags: libsmpp34
+
+- name: "libsmpp34: configure"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libsmpp34'
+  with_items:
+    - ./configure
+  tags: libsmpp34
+
+- name: "libsmpp34: make"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libsmpp34'
+  with_items:
+    - make
+  tags: libsmpp34
+
+- name: "libsmpp34: make install"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libsmpp34'
+  with_items:
+    - make install
+  become: true
+  tags: libsmpp34
+
+- name: "libsmpp34: ldconfig"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libsmpp34'
+  with_items:
+    - ldconfig -i
+  become: true
+  tags: libsmpp34
+
+
+
+
+# asn1c
+
+# - name: "asn1c deps"
+#   become: true
+#   apt: name={{item}} state=installed
+#   with_items:
+#     - libsctp-dev
+# tags: asn1c
+
+- name: "asn1c: clone"
+  git:
+    repo:     git://git.osmocom.org/asn1c
+    dest:     "{{osmo_checkout_base}}/asn1c"
+    version:  b9b7c9e54d079c6093a5e77a79aabed409dc9bfb
+  tags: asn1c
+
+- name: "asn1c: autoreconf"
+  command: '{{item}} chdir={{osmo_checkout_base}}/asn1c'
+  with_items:
+    - autoreconf -i
+  tags: asn1c
+
+- name: "asn1c: configure"
+  command: '{{item}} chdir={{osmo_checkout_base}}/asn1c'
+  with_items:
+    - ./configure
+  tags: asn1c
+
+- name: "asn1c: make"
+  command: '{{item}} chdir={{osmo_checkout_base}}/asn1c'
+  with_items:
+    - make -j2
+  tags: asn1c
+
+- name: "asn1c: make install"
+  command: '{{item}} chdir={{osmo_checkout_base}}/asn1c'
+  with_items:
+    - make install
+  become: true
+  tags: asn1c
+
+- name: "asn1c: ldconfig"
+  command: '{{item}} chdir={{osmo_checkout_base}}/asn1c'
+  with_items:
+    - ldconfig -i
+  become: true
+  tags: asn1c
+
+
+# libasn1c
+
+# - name: "libasn1c deps"
+#   become: true
+#   apt: name={{item}} state=installed
+#   with_items:
+#     - libsctp-dev
+# tags: libasn1c
+
+- name: "libasn1c: clone"
+  git:
+    repo:     git://git.osmocom.org/libasn1c
+    dest:     "{{osmo_checkout_base}}/libasn1c"
+    version:  20d668cbd3c14ef32fcbd09617fbd3c8e6856ec0
+  tags: libasn1c
+
+- name: "libasn1c: autoreconf"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libasn1c'
+  with_items:
+    - autoreconf -i
+  tags: libasn1c
+
+- name: "libasn1c: configure"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libasn1c'
+  with_items:
+    - ./configure
+  tags: libasn1c
+
+- name: "libasn1c: make"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libasn1c'
+  with_items:
+    - make -j3
+  tags: libasn1c
+
+- name: "libasn1c: make install"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libasn1c'
+  with_items:
+    - make install
+  become: true
+  tags: libasn1c
+
+- name: "libasn1c: ldconfig"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libasn1c'
+  with_items:
+    - ldconfig -i
+  become: true
+  tags: libasn1c
+
+
+# osmo-iuh
+
+# - name: "osmo-iuh deps"
+#   become: true
+#   apt: name={{item}} state=installed
+#   with_items:
+#     - libsctp-dev
+# tags: osmo-iuh
+
+- name: "osmo-iuh: clone"
+  git:
+    repo:     git://git.osmocom.org/osmo-iuh
+    dest:     "{{osmo_checkout_base}}/osmo-iuh"
+    version:  f41b2fa500c209136c3446f4bc9d9da348539f92
+  tags: osmo-iuh
+
+- name: "osmo-iuh: autoreconf"
+  command: '{{item}} chdir={{osmo_checkout_base}}/osmo-iuh'
+#  creates: configure
+  with_items:
+    - autoreconf -i
+  tags: osmo-iuh
+
+- name: "osmo-iuh: configure"
+  command: '{{item}} chdir={{osmo_checkout_base}}/osmo-iuh'
+  with_items:
+    - ./configure
+  tags: osmo-iuh
+
+- name: "osmo-iuh: make"
+  command: '{{item}} chdir={{osmo_checkout_base}}/osmo-iuh'
+#  creates: src/osmo-hnbgw
+  with_items:
+    - make -j3
+  tags: osmo-iuh
+
+- name: "osmo-iuh: make install"
+  command: '{{item}} chdir={{osmo_checkout_base}}/osmo-iuh'
+  with_items:
+    - make install
+  become: true
+  tags: osmo-iuh
+
+- name: "osmo-iuh: ldconfig"
+  command: '{{item}} chdir={{osmo_checkout_base}}/osmo-iuh'
+  with_items:
+    - ldconfig -i
+  become: true
+  tags: osmo-iuh
+
+
+
+# libgtpnl
+
+- name: "libgtpnl deps"
+  become: true
+  apt: name={{item}} state=installed
+  with_items:
+    - libsctp-dev
+    - libtalloc-dev
+    - libmnl-dev
+    - libc-ares-dev
+  tags: libgtpnl
+
+- name: "libgtpnl: clone"
+  git:
+    repo:     git://git.osmocom.org/libgtpnl
+    dest:     "{{osmo_checkout_base}}/libgtpnl"
+  tags: libgtpnl
+
+- name: "libgtpnl: autoreconf"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libgtpnl'
+  with_items:
+    - autoreconf -i
+  tags: libgtpnl
+
+- name: "libgtpnl: configure"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libgtpnl'
+  with_items:
+    - ./configure
+  tags: libgtpnl
+
+- name: "libgtpnl: make"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libgtpnl'
+  with_items:
+    - make -j3
+  tags: libgtpnl
+
+- name: "libgtpnl: make install"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libgtpnl'
+  with_items:
+    - make install
+  become: true
+  tags: libgtpnl
+
+- name: "libgtpnl: ldconfig"
+  command: '{{item}} chdir={{osmo_checkout_base}}/libgtpnl'
+  with_items:
+    - ldconfig -i
+  become: true
+  tags: libgtpnl
+
+
+
+# openggsn
+
+# - name: "openggsn deps"
+#   become: true
+#   apt: name={{item}} state=installed
+#   with_items:
+#     - libsctp-dev
+# tags: openggsn
+
+- name: "openggsn: clone"
+  git:
+    repo:     git://git.osmocom.org/openggsn
+    dest:     "{{osmo_checkout_base}}/openggsn"
+    version:  03dbafb000c88155309dfd67b3bba73f7b389e69
+  tags: openggsn
+
+- name: "openggsn: autoreconf"
+  command: '{{item}} chdir={{osmo_checkout_base}}/openggsn'
+  with_items:
+    - autoreconf -i
+  tags: openggsn
+
+- name: "openggsn: configure"
+  command: '{{item}} chdir={{osmo_checkout_base}}/openggsn'
+  with_items:
+    - ./configure --enable-gtp-linux
+  tags: openggsn
+
+- name: "openggsn: make"
+  command: '{{item}} chdir={{osmo_checkout_base}}/openggsn'
+  with_items:
+    - make -j3
+  tags: openggsn
+
+- name: "openggsn: make install"
+  command: '{{item}} chdir={{osmo_checkout_base}}/openggsn'
+  with_items:
+    - make install
+  become: true
+  tags: openggsn
+
+- name: "openggsn: ldconfig"
+  command: '{{item}} chdir={{osmo_checkout_base}}/openggsn'
+  with_items:
+    - ldconfig -i
+  become: true
+  tags: openggsn
+
+
+
+# openbsc
+
+- name: "openbsc deps"
+  become: true
+  apt: name={{item}} state=installed
+  with_items:
+    - libssl-dev
+    - libdbi-dev
+    - libdbd-sqlite3
+    - libtalloc-dev
+    - libpcsclite-dev
+    - libpcap-dev
+    - libc-ares-dev
+  tags: openbsc
+
+- name: "openbsc: clone"
+  git:
+    repo:     git://git.osmocom.org/openbsc
+    dest:     "{{osmo_checkout_base}}/openbsc"
+    version:  8a9f12dc2f69bf3a4e861cc9a81b71bdc5f13180
+  tags: openbsc
+
+- name: "openbsc: autoreconf"
+  command: '{{item}} chdir={{osmo_checkout_base}}/openbsc/openbsc'
+  with_items:
+    - autoreconf -i
+  tags: openbsc
+
+- name: "openbsc: configure"
+  command: '{{item}} chdir={{osmo_checkout_base}}/openbsc/openbsc'
+  with_items:
+    - ./configure --enable-iu --enable-smpp --enable-osmo-bsc --enable-nat
+  tags: openbsc
+
+- name: "openbsc: make"
+  command: '{{item}} chdir={{osmo_checkout_base}}/openbsc/openbsc'
+  with_items:
+    - make -j3
+  tags: openbsc
+
+- name: "openbsc: make install"
+  command: '{{item}} chdir={{osmo_checkout_base}}/openbsc/openbsc'
+  with_items:
+    - make install
+  become: true
+  tags: openbsc
+
+- name: "openbsc: ldconfig"
+  command: '{{item}} chdir={{osmo_checkout_base}}/openbsc/openbsc'
+  with_items:
+    - ldconfig -i
+  become: true
+  tags: openbsc
