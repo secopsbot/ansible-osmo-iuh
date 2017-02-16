@@ -8,8 +8,7 @@
 ## iuh user in sudo group
 ## sudo installed
 
-- hosts: 172.16.176.134
-#- hosts: 172.16.176.137
+- hosts: default
   remote_user: iuh
   become_method: sudo
 
