@@ -14,6 +14,7 @@
 
 
   vars:
+    ansible_ssh_pass:        "iuh"
     osmo_checkout_base:      "/home/iuh/_code/"
     omso_config_base:        "/home/iuh/3G-config/"
     hnb_adapter_ip:          
